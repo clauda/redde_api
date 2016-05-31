@@ -11,11 +11,12 @@ defmodule ReddeApi.Contact do
     field :purchasing, :integer, default: 0
     field :accepted, :boolean, default: false
     field :observations, :string
+    belongs_to :user, ReddeApi.User
 
     timestamps
   end
 
-  @required_fields ~w(fullname code_area phone_number)
+  @required_fields ~w(fullname code_area phone_number user_id)
   @optional_fields ~w(email ambitious popularity purchasing accepted observations)
 
   @doc """

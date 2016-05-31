@@ -29,6 +29,22 @@ defmodule ReddeApi.ConnCase do
 
       # The default endpoint for testing
       @endpoint ReddeApi.Endpoint
+
+      @session Plug.Session.init(
+        store: :cookie,
+        key: "_app",
+        encryption_salt: "edder",
+        signing_salt: "edder"
+      )
+
+      def login(conn, resource, claims) do
+        conn
+        |> Plug.Session.call(@session)
+        |> Plug.Conn.fetch_session()
+        |> Guardian.Plug.sign_in(resource, :token, claims)
+        |> assign(:current_user, resource)
+        |> put_session(:user_id, resource.id)
+      end
     end
   end
 

@@ -9,19 +9,29 @@ defmodule ReddeApi.Router do
     plug :put_secure_browser_headers
   end
 
+  scope "/", ReddeApi do
+    pipe_through :browser
+    resources "/sessions", SessionController, only: [:new]
+  end
+
+  pipeline :api_auth do  
+  end
+
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
+    plug :fetch_flash
+
+    plug Guardian.Plug.VerifyHeader, realm: "Bearer"
+    plug Guardian.Plug.LoadResource
   end
 
-  scope "/", ReddeApi do
-    pipe_through :browser # Use the default browser stack
-
-    get "/", PageController, :index
-  end
-
-  # Other scopes may use custom stacks.
   scope "/api", ReddeApi do
     pipe_through :api
+    get "/", ContactController, :index
+
     resources "/contacts", ContactController, except: [:new, :edit]
+    resources "/users", UserController, only: [:create]
+    resources "/sessions", SessionController, only: [:create]
   end
 end

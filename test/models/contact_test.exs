@@ -3,8 +3,8 @@ defmodule ReddeApi.ContactTest do
 
   alias ReddeApi.Contact
 
-  @valid_attrs %{accepted: true, ambitious: 42, code_area: 42, email: "some content", fullname: "some content", observations: "some content", phone_number: "some content", popularity: 42, purchasing: 42}
-  @invalid_attrs %{}
+  @valid_attrs %{user_id: 1, code_area: 42, fullname: "some one", phone_number: "9999999"}
+  @invalid_attrs %{email: nil}
 
   test "changeset with valid attributes" do
     changeset = Contact.changeset(%Contact{}, @valid_attrs)

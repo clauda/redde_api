@@ -5,13 +5,17 @@ defmodule ReddeApi.ContactController do
 
   plug :scrub_params, "contact" when action in [:create, :update]
 
+  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
+
   def index(conn, _params) do
-    contacts = Repo.all(Contact)
+    current_user = Guardian.Plug.current_resource(conn)
+    query = from c in Contact, where: c.user_id == ^current_user.id, select: c
+    contacts = Repo.all(query)
     render(conn, "index.json", contacts: contacts)
   end
 
   def create(conn, %{"contact" => contact_params}) do
-    changeset = Contact.changeset(%Contact{}, contact_params)
+    changeset = Contact.changeset(%Contact{user_id: conn.assigns.current_user.id}, contact_params)
 
     case Repo.insert(changeset) do
       {:ok, contact} ->
@@ -54,4 +58,11 @@ defmodule ReddeApi.ContactController do
 
     send_resp(conn, :no_content, "")
   end
+
+  def unauthenticated(conn, _params) do
+    conn
+    |> put_flash(:error, "Authentication required")
+    |> redirect(to: session_path(conn, :new))
+  end
+
 end

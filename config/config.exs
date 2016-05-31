@@ -27,3 +27,12 @@ import_config "#{Mix.env}.exs"
 config :phoenix, :generators,
   migration: true,
   binary_id: false
+
+config :guardian, Guardian,
+  allowed_algos: ["HS512"], # optional
+  verify_module: Guardian.JWT,  # optional
+  issuer: "ReddeApi",
+  ttl: { 30, :days },
+  verify_issuer: true, # optional
+  secret_key: "sup3rs3cr3tk3y",
+  serializer: ReddeApi.Serializer

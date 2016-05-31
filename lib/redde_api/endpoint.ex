@@ -35,5 +35,7 @@ defmodule ReddeApi.Endpoint do
     key: "_redde_api_key",
     signing_salt: "EaBQFs83"
 
+  plug CORSPlug
+
   plug ReddeApi.Router
 end
