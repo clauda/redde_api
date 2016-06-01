@@ -15,7 +15,8 @@ defmodule ReddeApi.ContactController do
   end
 
   def create(conn, %{"contact" => contact_params}) do
-    changeset = Contact.changeset(%Contact{user_id: conn.assigns.current_user.id}, contact_params)
+    current_user = Guardian.Plug.current_resource(conn)
+    changeset = Contact.changeset(%Contact{user_id: current_user.id}, contact_params)
 
     case Repo.insert(changeset) do
       {:ok, contact} ->

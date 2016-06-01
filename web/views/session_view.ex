@@ -14,6 +14,6 @@ defmodule ReddeApi.SessionView do
   end
 
   def render("error.json", _anything) do
-    %{errors: "kiiiu"}
+    %{errors: "Fail!"}
   end
 end

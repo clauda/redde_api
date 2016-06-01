@@ -21,7 +21,7 @@ defmodule ReddeApi.SessionController do
         |> render("login.json", jwt: jwt)
       {:error, reason, conn} ->
         conn
-        |> put_status(500)
+        |> put_status(401)
         |> render("error.json", message: reason)
     end
   end

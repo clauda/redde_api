@@ -54,6 +54,7 @@ defmodule ReddeApi.ContactControllerTest do
       |> get(contact_path(conn, :show, contact))
 
     assert json_response(conn, 200)["data"] == %{"id" => contact.id,
+      "user_id" => contact.user_id,
       "fullname" => contact.fullname,
       "email" => contact.email,
       "code_area" => contact.code_area,
