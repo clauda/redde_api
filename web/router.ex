@@ -32,6 +32,7 @@ defmodule ReddeApi.Router do
 
     resources "/contacts", ContactController, except: [:new, :edit]
     resources "/users", UserController, only: [:create]
+    get "/profile", UserController, :profile
     resources "/sessions", SessionController, only: [:create]
   end
 end

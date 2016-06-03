@@ -1,6 +1,7 @@
 defmodule ReddeApi.User do
   use ReddeApi.Web, :model
-
+  # @derive {Poison.Encoder, except: [:__meta__]}
+  
   schema "users" do
     field :name, :string
     field :email, :string
