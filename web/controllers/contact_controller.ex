@@ -1,6 +1,5 @@
 defmodule ReddeApi.ContactController do
   use ReddeApi.Web, :controller
-
   alias ReddeApi.Contact
 
   plug :scrub_params, "contact" when action in [:create, :update]
@@ -9,7 +8,7 @@ defmodule ReddeApi.ContactController do
 
   def index(conn, _params) do
     current_user = Guardian.Plug.current_resource(conn)
-    query = from c in Contact, where: c.user_id == ^current_user.id, select: c
+    query = from c in Contact, where: c.user_id == ^current_user.id, order_by: [c.fullname]
     contacts = Repo.all(query)
     render(conn, "index.json", contacts: contacts)
   end
