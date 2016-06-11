@@ -20,6 +20,7 @@ defmodule ReddeApi.ContactView do
       popularity: contact.popularity,
       purchasing: contact.purchasing,
       accepted: contact.accepted,
-      observations: contact.observations}
+      observations: contact.observations,
+      inserted_at: contact.inserted_at}
   end
 end
