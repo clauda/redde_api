@@ -21,6 +21,7 @@ defmodule ReddeApi.ContactView do
       purchasing: contact.purchasing,
       accepted: contact.accepted,
       observations: contact.observations,
+      deleted: contact.deleted,
       inserted_at: contact.inserted_at}
   end
 end

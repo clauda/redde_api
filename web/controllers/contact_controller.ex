@@ -8,8 +8,11 @@ defmodule ReddeApi.ContactController do
 
   def index(conn, _params) do
     current_user = Guardian.Plug.current_resource(conn)
-    query = from c in Contact, where: c.user_id == ^current_user.id, order_by: [c.fullname]
-    contacts = Repo.all(query)
+    contacts = 
+      (from c in Contact, 
+        where: c.user_id == ^current_user.id and c.deleted == false,
+        order_by: [c.fullname])
+      |> Repo.all()
     render(conn, "index.json", contacts: contacts)
   end
 
@@ -54,9 +57,16 @@ defmodule ReddeApi.ContactController do
 
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).
-    Repo.delete!(contact)
-
-    send_resp(conn, :no_content, "")
+    # Repo.delete!(contact)
+    changeset = Contact.changeset(contact, %{ deleted: true, deleted_at: Ecto.DateTime.utc() })
+    case Repo.update(changeset) do
+      {:ok, contact} ->
+        render(conn, "show.json", contact: contact)
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render(ReddeApi.ChangesetView, "error.json", changeset: changeset)
+    end
   end
 
   def unauthenticated(conn, _params) do

@@ -19,7 +19,7 @@ defmodule ReddeApi.ContactControllerTest do
 
   def create_contact(%{fullname: _fullname, user_id: _user_id} = options) do
     Contact.changeset(%Contact{code_area: 11, phone_number: "99999999"}, options) 
-    |> Repo.insert!
+    |> Repo.insert! 
   end
 
   test "lists all entries", context do
@@ -52,7 +52,7 @@ defmodule ReddeApi.ContactControllerTest do
     conn = conn
       |> login(current_user, claims)
       |> get(contact_path(conn, :show, contact))
-
+    
     assert json_response(conn, 200)["data"] == %{"id" => contact.id,
       "user_id" => contact.user_id,
       "fullname" => contact.fullname,
@@ -63,7 +63,9 @@ defmodule ReddeApi.ContactControllerTest do
       "popularity" => contact.popularity,
       "purchasing" => contact.purchasing,
       "accepted" => contact.accepted,
-      "observations" => contact.observations }
+      "observations" => contact.observations,
+      "deleted" => contact.deleted,
+      "inserted_at" => Ecto.DateTime.to_iso8601(contact.inserted_at) }
   end
 
   test "does not show resource and instead throw error when id is nonexistent", %{claims: claims, current_user: current_user} do
@@ -97,10 +99,12 @@ defmodule ReddeApi.ContactControllerTest do
     assert json_response(conn, 422)["errors"] != %{}
   end
 
-  test "deletes chosen resource", %{claims: claims, current_user: current_user} do
+  test "deletes chosen resource shouldn't destroy but flag it as deleted", %{claims: claims, current_user: current_user} do
     contact = create_contact(%{fullname: "Claudia Farias", user_id: current_user.id})
     conn = conn |> login(current_user, claims) |> delete(contact_path(conn, :delete, contact))
-    assert response(conn, 204)
-    refute Repo.get(Contact, contact.id)
+
+    assert json_response(conn, 200)["data"]["id"]
+    assert json_response(conn, 200)["data"]["deleted"]
+    assert Repo.get(Contact, contact.id)
   end
 end

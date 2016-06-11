@@ -10,6 +10,8 @@ defmodule ReddeApi.Contact do
     field :popularity, :integer, default: 0
     field :purchasing, :integer, default: 0
     field :accepted, :boolean, default: false
+    field :deleted, :boolean, default: false
+    field :deleted_at, Ecto.DateTime
     field :observations, :string
     belongs_to :user, ReddeApi.User
 
@@ -17,7 +19,7 @@ defmodule ReddeApi.Contact do
   end
 
   @required_fields ~w(fullname code_area phone_number user_id)
-  @optional_fields ~w(email ambitious popularity purchasing accepted observations)
+  @optional_fields ~w(email ambitious popularity purchasing accepted observations deleted deleted_at)
 
   @doc """
   Creates a changeset based on the `model` and `params`.
@@ -29,4 +31,5 @@ defmodule ReddeApi.Contact do
     model
     |> cast(params, @required_fields, @optional_fields)
   end
+
 end
