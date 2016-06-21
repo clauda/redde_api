@@ -1,6 +1,8 @@
 defmodule ReddeApi.Contact do
   use ReddeApi.Web, :model
 
+  alias ReddeApi.{Repo, Region}
+
   schema "contacts" do
     field :fullname, :string
     field :email, :string
@@ -31,6 +33,16 @@ defmodule ReddeApi.Contact do
   def changeset(model, params \\ :empty) do
     model
     |> cast(params, @required_fields, @optional_fields)
+    |> update_state
+  end
+
+  defp update_state(changeset) do
+    if code_area = get_change(changeset, :code_area) do
+      region = Repo.get_by(Region, code_area: code_area)
+      put_change(changeset, :state, region.state)
+    else
+      changeset
+    end
   end
 
 end
