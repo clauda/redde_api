@@ -7,6 +7,8 @@ defmodule Mix.Tasks.Regions do
   @shortdoc "Seed many regions."
   
   def run(_) do
+    Repo.start_link # start
+    
     File.read!('priv/repo/data/regions.txt')
     |> String.split("\n", trim: true)
     |> Enum.each(&(insert(&1)))
@@ -23,4 +25,5 @@ defmodule Mix.Tasks.Regions do
       code_area: code_area
     }
   end
+
 end
