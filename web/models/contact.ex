@@ -6,6 +6,7 @@ defmodule ReddeApi.Contact do
     field :email, :string
     field :code_area, :integer
     field :phone_number, :string
+    field :state, :string
     field :ambitious, :integer, default: 0
     field :popularity, :integer, default: 0
     field :purchasing, :integer, default: 0
@@ -19,7 +20,7 @@ defmodule ReddeApi.Contact do
   end
 
   @required_fields ~w(fullname code_area phone_number user_id)
-  @optional_fields ~w(email ambitious popularity purchasing accepted observations deleted deleted_at)
+  @optional_fields ~w(email state ambitious popularity purchasing accepted observations deleted deleted_at)
 
   @doc """
   Creates a changeset based on the `model` and `params`.
