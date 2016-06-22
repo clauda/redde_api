@@ -39,7 +39,7 @@ defmodule ReddeApi.Contact do
   defp update_state(changeset) do
     if code_area = get_change(changeset, :code_area) do
       region = Repo.get_by(Region, code_area: code_area)
-      put_change(changeset, :state, region.state)
+      if region && region.state, do: put_change(changeset, :state, region.state)
     else
       changeset
     end

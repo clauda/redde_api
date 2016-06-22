@@ -1,12 +1,15 @@
 defmodule ReddeApi.ContactControllerTest do
   use ReddeApi.ConnCase
 
-  alias ReddeApi.{Repo, User, Contact}
+  alias ReddeApi.{Repo, User, Contact, Region}
 
   @valid_attrs %{accepted: true, ambitious: 42, code_area: 42, email: "some content", fullname: "some content", observations: "some content", phone_number: "some content", popularity: 42, purchasing: 42}
   @invalid_attrs %{fullname: "", code_area: nil, phone_number: nil}
 
-  setup do  
+  setup do
+    Region.changeset(%Region{}, %{code_area: 42, state: "Galaxy"}) 
+    |> Repo.insert!
+
     current_user = create_user(%{name: "jane"})
     {:ok, token, full_claims} = Guardian.encode_and_sign(current_user, :api)
     {:ok, %{current_user: current_user, token: token, claims: full_claims}}
