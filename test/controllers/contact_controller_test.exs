@@ -3,7 +3,7 @@ defmodule ReddeApi.ContactControllerTest do
 
   alias ReddeApi.{Repo, User, Contact, Region}
 
-  @valid_attrs %{accepted: true, ambitious: 42, code_area: 42, email: "some content", fullname: "some content", observations: "some content", phone_number: "some content", popularity: 42, purchasing: 42}
+  @valid_attrs %{accepted: true, ambitious: 42, code_area: 42, email: "some@content.com", fullname: "Fulano", observations: "Lorem", phone_number: "99999", popularity: 42, purchasing: 42}
   @invalid_attrs %{fullname: "", code_area: nil, phone_number: nil}
 
   setup do
