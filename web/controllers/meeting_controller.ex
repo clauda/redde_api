@@ -1,9 +1,10 @@
 defmodule ReddeApi.MeetingController do
   use ReddeApi.Web, :controller
-
   alias ReddeApi.Meeting
 
   plug :scrub_params, "meeting" when action in [:create, :update]
+
+  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
 
   def index(conn, _params) do
     mettings = Repo.all(Meeting)
@@ -53,5 +54,11 @@ defmodule ReddeApi.MeetingController do
     Repo.delete!(meeting)
 
     send_resp(conn, :no_content, "")
+  end
+
+  def unauthenticated(conn, _params) do
+    conn
+    |> put_flash(:error, "Authentication required")
+    |> redirect(to: session_path(conn, :new))
   end
 end
