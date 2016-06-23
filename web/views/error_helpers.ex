@@ -26,10 +26,10 @@ defmodule ReddeApi.ErrorHelpers do
     #
     #     dngettext "errors", "1 file", "%{count} files", count
     #
-    Gettext.dngettext(ReddeApi.Gettext, "errors", msg, msg, opts[:count], opts)
-  end
-
-  def translate_error(msg) do
-    Gettext.dgettext(ReddeApi.Gettext, "errors", msg)
+    if count = opts[:count] do
+      Gettext.dngettext(ReddeApi.Gettext, "errors", msg, msg, count, opts)
+    else
+      Gettext.dgettext(ReddeApi.Gettext, "errors", msg, opts)
+    end
   end
 end

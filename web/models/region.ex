@@ -7,8 +7,7 @@ defmodule ReddeApi.Region do
     field :state, :string
   end
 
-  @required_fields ~w(code_area)
-  @optional_fields ~w(name state)
+  @fields ~w(code_area name state)
 
   @doc """
   Creates a changeset based on the `model` and `params`.
@@ -16,9 +15,10 @@ defmodule ReddeApi.Region do
   If no params are provided, an invalid changeset is returned
   with no validation performed.
   """
-  def changeset(model, params \\ :empty) do
+  def changeset(model, params \\ %{}) do
     model
-    |> cast(params, @required_fields, @optional_fields)
+    |> cast(params, @fields)
+    |> validate_required([:code_area])
     |> unique_constraint(:code_area)
   end
 end

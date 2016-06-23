@@ -12,8 +12,7 @@ defmodule ReddeApi.Meeting do
     timestamps
   end
 
-  @required_fields ~w(day time contact_id)
-  @optional_fields ~w(address duration canceled)
+  @fields ~w(day time contact_id address duration canceled)
 
   @doc """
   Creates a changeset based on the `model` and `params`.
@@ -21,9 +20,10 @@ defmodule ReddeApi.Meeting do
   If no params are provided, an invalid changeset is returned
   with no validation performed.
   """
-  def changeset(model, params \\ :empty) do
+  def changeset(model, params \\ %{}) do
     model
-    |> cast(params, @required_fields, @optional_fields)
+    |> cast(params, @fields)
+    |> validate_required([:day, :time, :contact_id])
     |> foreign_key_constraint(:contact_id)
   end
 end

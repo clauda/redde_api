@@ -3,7 +3,7 @@ defmodule ReddeApi.UserControllerTest do
 
   alias ReddeApi.User
   @valid_attrs %{email: "foo@bar.com", password: "s3cr3t", name: "Claudia", company: "Phoenix"}
-  @invalid_attrs %{}
+  @invalid_attrs %{email: nil}
 
   setup do  
     current_user = create_user(%{name: "jane"})

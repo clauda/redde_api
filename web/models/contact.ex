@@ -21,8 +21,7 @@ defmodule ReddeApi.Contact do
     timestamps
   end
 
-  @required_fields ~w(fullname code_area phone_number user_id)
-  @optional_fields ~w(email state ambitious popularity purchasing accepted observations deleted deleted_at)
+  @fields ~w(fullname code_area phone_number user_id email state ambitious popularity purchasing accepted observations deleted deleted_at)
 
   @doc """
   Creates a changeset based on the `model` and `params`.
@@ -30,9 +29,10 @@ defmodule ReddeApi.Contact do
   If no params are provided, an invalid changeset is returned
   with no validation performed.
   """
-  def changeset(model, params \\ :empty) do
+  def changeset(model, params \\ %{}) do
     model
-    |> cast(params, @required_fields, @optional_fields)
+    |> cast(params, @fields)
+    |> validate_required([:fullname, :code_area, :phone_number, :user_id])
     |> validate_format(:email, ~r/@/)
     |> update_state
   end
