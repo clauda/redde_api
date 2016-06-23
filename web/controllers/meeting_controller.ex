@@ -7,19 +7,18 @@ defmodule ReddeApi.MeetingController do
   plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
 
   def index(conn, _params) do
-    mettings = Repo.all(Meeting)
+    mettings = Repo.all(Meeting) |> Repo.preload(:contact)
     render(conn, "index.json", mettings: mettings)
   end
 
   def create(conn, %{"meeting" => meeting_params}) do
     changeset = Meeting.changeset(%Meeting{}, meeting_params)
-
     case Repo.insert(changeset) do
       {:ok, meeting} ->
         conn
         |> put_status(:created)
         |> put_resp_header("location", meeting_path(conn, :show, meeting))
-        |> render("show.json", meeting: meeting)
+        |> render("show.json", meeting: Repo.preload(meeting, :contact))
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -28,14 +27,13 @@ defmodule ReddeApi.MeetingController do
   end
 
   def show(conn, %{"id" => id}) do
-    meeting = Repo.get!(Meeting, id)
+    meeting = Repo.get!(Meeting, id) |> Repo.preload(:contact)
     render(conn, "show.json", meeting: meeting)
   end
 
   def update(conn, %{"id" => id, "meeting" => meeting_params}) do
-    meeting = Repo.get!(Meeting, id)
+    meeting = Repo.get!(Meeting, id) |> Repo.preload(:contact)
     changeset = Meeting.changeset(meeting, meeting_params)
-
     case Repo.update(changeset) do
       {:ok, meeting} ->
         render(conn, "show.json", meeting: meeting)

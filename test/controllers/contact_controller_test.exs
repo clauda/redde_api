@@ -1,6 +1,5 @@
 defmodule ReddeApi.ContactControllerTest do
   use ReddeApi.ConnCase
-  use ExUnit.Case, async: true
 
   alias ReddeApi.{Repo, User, Contact, Region}
 

@@ -15,7 +15,12 @@ defmodule ReddeApi.MeetingView do
       time: meeting.time,
       duration: meeting.duration,
       address: meeting.address,
-      contact_id: meeting.contact_id,
+      contact: %{
+        id: meeting.contact.id,
+        fullname: meeting.contact.fullname,
+        code_area: meeting.contact.code_area,
+        phone_number: meeting.contact.phone_number
+      },
       canceled: meeting.canceled}
   end
 end
