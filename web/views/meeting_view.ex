@@ -1,8 +1,8 @@
 defmodule ReddeApi.MeetingView do
   use ReddeApi.Web, :view
 
-  def render("index.json", %{mettings: mettings}) do
-    %{data: render_many(mettings, ReddeApi.MeetingView, "meeting.json")}
+  def render("index.json", %{meetings: meetings}) do
+    %{data: render_many(meetings, ReddeApi.MeetingView, "meeting.json")}
   end
 
   def render("show.json", %{meeting: meeting}) do

@@ -5,12 +5,15 @@ defmodule ReddeApi.Repo.Migrations.CreateContact do
     create table(:contacts) do
       add :fullname, :string, null: false
       add :email, :string
+      add :state,    :string
       add :code_area, :integer
       add :phone_number, :string
       add :ambitious, :integer, default: 0
       add :popularity, :integer, default: 0
       add :purchasing, :integer, default: 0
       add :accepted, :boolean, default: false
+      add :deleted,    :boolean, default: false
+      add :deleted_at, :datetime
       add :observations, :string
 
       timestamps

@@ -7,6 +7,5 @@ defmodule ReddeApi.Repo.Migrations.CreateRegion do
       add :name, :string
       add :state, :string
     end
-
   end
 end

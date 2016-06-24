@@ -1,18 +1,19 @@
 defmodule ReddeApi.Meeting do
   use ReddeApi.Web, :model
 
-  schema "mettings" do
+  schema "meetings" do
     field :day, Ecto.Date
     field :time, Ecto.Time
     field :duration, :integer, default: 60
     field :address, :string
     field :canceled, :boolean, default: false
+    belongs_to :user, ReddeApi.User
     belongs_to :contact, ReddeApi.Contact
 
     timestamps
   end
 
-  @fields ~w(day time contact_id address duration canceled)
+  @fields ~w(day time user_id contact_id address duration canceled)
 
   @doc """
   Creates a changeset based on the `model` and `params`.

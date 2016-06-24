@@ -12,9 +12,6 @@
 
 user = ReddeApi.User.registration_changeset(%ReddeApi.User{}, %{name: "Claudia", email: "claudia@sorta.in", password: "<3phoenix"})
 if user.valid?, do: ReddeApi.Repo.insert!(user)
-contact = ReddeApi.Contact.changeset(%ReddeApi.Contact{}, %{fullname: "Valim", code_area: 11, phone_number: "99999-9999", user_id: 1, state: "São Paulo"})
-if contact.valid?, do: ReddeApi.Repo.insert!(contact)
-
 # Repo.aggregate(Region, :count, :id) # Ecto 2.0
 
 defmodule ReddeApi.DatabaseSeeder do
@@ -42,4 +39,7 @@ defmodule ReddeApi.DatabaseSeeder do
 end
 
 ReddeApi.DatabaseSeeder.run
+
+contact = ReddeApi.Contact.changeset(%ReddeApi.Contact{}, %{fullname: "Valim", code_area: 11, phone_number: "99999-9999", user_id: 1, state: "São Paulo"})
+if contact.valid?, do: ReddeApi.Repo.insert!(contact)
 

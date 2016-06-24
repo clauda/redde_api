@@ -23,6 +23,7 @@ defmodule ReddeApi.User do
     |> validate_required([:email])
     |> validate_length(:email, min: 1, max: 255)
     |> validate_format(:email, ~r/@/)
+    |> unique_constraint(:email)
   end
 
   def registration_changeset(model, params \\ %{}) do

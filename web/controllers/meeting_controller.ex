@@ -7,8 +7,8 @@ defmodule ReddeApi.MeetingController do
   plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
 
   def index(conn, _params) do
-    mettings = Repo.all(Meeting) |> Repo.preload(:contact)
-    render(conn, "index.json", mettings: mettings)
+    meetings = Repo.all(Meeting) |> Repo.preload(:contact)
+    render(conn, "index.json", meetings: meetings)
   end
 
   def create(conn, %{"meeting" => meeting_params}) do

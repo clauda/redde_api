@@ -3,13 +3,13 @@ defmodule ReddeApi.MeetingControllerTest do
 
   alias ReddeApi.{Repo, User, Contact, Meeting}
 
-  @valid_attrs %{day: "2010-04-17", time: "14:00:00", contact_id: 1, address: "Rua dos Bobos, 0"}
+  @valid_attrs %{day: "2010-04-17", time: "14:00:00", address: "Rua dos Bobos, 0"}
   @invalid_attrs %{day: nil}
 
   setup do
     current_user = create_user(%{name: "jane"})
-
     contact = Contact.changeset(%Contact{fullname: "Claudia", user_id: current_user.id, code_area: 11, phone_number: "99999999"}) |> Repo.insert!
+
     {:ok, token, full_claims} = Guardian.encode_and_sign(current_user, :api)
     {:ok, %{current_user: current_user, token: token, claims: full_claims, contact: contact}}
   end
@@ -68,6 +68,7 @@ defmodule ReddeApi.MeetingControllerTest do
   test "updates and renders chosen resource when data is valid", %{claims: claims, current_user: current_user, contact: contact} do
     meeting = Repo.insert! %Meeting{day: Ecto.Date.utc, time: Ecto.Time.utc, contact_id: contact.id, address: "Baker St"}
     conn = conn |> login(current_user, claims) |> put(meeting_path(conn, :update, meeting), meeting: @valid_attrs)
+
     assert json_response(conn, 200)["data"]["id"]
     assert Repo.get_by(Meeting, @valid_attrs)
   end
