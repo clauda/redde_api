@@ -7,12 +7,18 @@ defmodule ReddeApi.MeetingController do
   plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
 
   def index(conn, _params) do
-    meetings = Repo.all(Meeting) |> Repo.preload(:contact)
+    current_user = Guardian.Plug.current_resource(conn)
+    meetings = 
+      (from meeting in Meeting,
+        where: meeting.user_id == ^current_user.id,
+        order_by: [meeting.day])
+      |> Repo.all() |> Repo.preload(:contact)
     render(conn, "index.json", meetings: meetings)
   end
 
   def create(conn, %{"meeting" => meeting_params}) do
-    changeset = Meeting.changeset(%Meeting{}, meeting_params)
+    current_user = Guardian.Plug.current_resource(conn)
+    changeset = Meeting.changeset(%Meeting{user_id: current_user.id}, meeting_params)
     case Repo.insert(changeset) do
       {:ok, meeting} ->
         conn
@@ -45,13 +51,20 @@ defmodule ReddeApi.MeetingController do
   end
 
   def delete(conn, %{"id" => id}) do
-    meeting = Repo.get!(Meeting, id)
+    meeting = Repo.get!(Meeting, id) |> Repo.preload(:contact)
 
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).
-    Repo.delete!(meeting)
-
-    send_resp(conn, :no_content, "")
+    # Repo.delete!(meeting)
+    changeset = Meeting.changeset(meeting, %{ canceled: true })
+    case Repo.update(changeset) do
+      {:ok, meeting} ->
+        render(conn, "show.json", meeting: meeting)
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render(ReddeApi.ChangesetView, "error.json", changeset: changeset)
+    end
   end
 
   def unauthenticated(conn, _params) do

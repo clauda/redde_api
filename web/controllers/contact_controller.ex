@@ -9,9 +9,9 @@ defmodule ReddeApi.ContactController do
   def index(conn, _params) do
     current_user = Guardian.Plug.current_resource(conn)
     contacts = 
-      (from c in Contact, 
-        where: c.user_id == ^current_user.id and c.deleted == false,
-        order_by: [c.fullname])
+      (from contact in Contact,
+        where: contact.user_id == ^current_user.id and contact.deleted == false,
+        order_by: [contact.fullname])
       |> Repo.all()
     render(conn, "index.json", contacts: contacts)
   end

@@ -17,6 +17,7 @@ defmodule ReddeApi.Contact do
     field :deleted_at, Ecto.DateTime
     field :observations, :string
     belongs_to :user, ReddeApi.User
+    has_many :meetings, ReddeApi.Meeting
 
     timestamps
   end

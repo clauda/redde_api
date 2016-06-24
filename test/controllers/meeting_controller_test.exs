@@ -15,8 +15,13 @@ defmodule ReddeApi.MeetingControllerTest do
   end
 
   def create_user(%{name: name}) do
-    User.registration_changeset(%User{}, %{email: "#{name}@example.com", password: "<3phoenix"}) 
+    User.registration_changeset(%User{}, %{email: "#{name}@reddeapp.com.br", password: "<3phoenix"}) 
     |> Repo.insert!
+  end
+
+  def create_meeting(options) do
+    Meeting.changeset(%Meeting{day: Ecto.Date.utc, time: Ecto.Time.utc, address: "Baker St"}, options)
+    |> Repo.insert! |> Repo.preload([:user, :contact])
   end
 
   test "unauthorize" do
@@ -30,8 +35,10 @@ defmodule ReddeApi.MeetingControllerTest do
   end
 
   test "shows chosen resource", %{claims: claims, current_user: current_user, contact: contact} do
-    meeting = Repo.insert! %Meeting{day: Ecto.Date.utc, time: Ecto.Time.utc, contact_id: contact.id, address: "Baker St"} |> Repo.preload(:contact)
-    conn = conn |> login(current_user, claims) |> get(meeting_path(conn, :show, meeting))
+    meeting = create_meeting(%{contact_id: contact.id})
+    conn = conn 
+      |> login(current_user, claims) 
+      |> get(meeting_path(conn, :show, meeting))
     
     assert json_response(conn, 200)["data"] == %{"id" => meeting.id,
       "day" => Ecto.Date.to_iso8601(meeting.day),
@@ -66,23 +73,25 @@ defmodule ReddeApi.MeetingControllerTest do
   end
 
   test "updates and renders chosen resource when data is valid", %{claims: claims, current_user: current_user, contact: contact} do
-    meeting = Repo.insert! %Meeting{day: Ecto.Date.utc, time: Ecto.Time.utc, contact_id: contact.id, address: "Baker St"}
+    meeting = create_meeting(%{contact_id: contact.id})
     conn = conn |> login(current_user, claims) |> put(meeting_path(conn, :update, meeting), meeting: @valid_attrs)
 
     assert json_response(conn, 200)["data"]["id"]
     assert Repo.get_by(Meeting, @valid_attrs)
   end
 
-  test "does not update chosen resource and renders errors when data is invalid", %{claims: claims, current_user: current_user} do
-    meeting = Repo.insert! %Meeting{}
+  test "does not update chosen resource and renders errors when data is invalid", %{claims: claims, current_user: current_user, contact: contact} do
+    meeting = create_meeting(%{contact_id: contact.id})
     conn = conn |> login(current_user, claims) |> put(meeting_path(conn, :update, meeting), meeting: @invalid_attrs)
     assert json_response(conn, 422)["errors"] != %{}
   end
 
-  test "deletes chosen resource", %{claims: claims, current_user: current_user} do
-    meeting = Repo.insert! %Meeting{}
+  test "deletes chosen resource", %{claims: claims, current_user: current_user, contact: contact} do
+    meeting = create_meeting(%{contact_id: contact.id})
     conn = conn |> login(current_user, claims) |> delete(meeting_path(conn, :delete, meeting))
-    assert response(conn, 204)
-    refute Repo.get(Meeting, meeting.id)
+    
+    assert json_response(conn, 200)["data"]["id"]
+    assert json_response(conn, 200)["data"]["canceled"]
+    assert Repo.get(Meeting, meeting.id)
   end
 end
