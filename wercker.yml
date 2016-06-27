@@ -21,7 +21,7 @@ services:
   # pg_ctl -D /var/lib/postgresql/data -l logfile start
   - id: postgres
     env:
-      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_PASSWORD: postgres
       # POSTGRES_USER: postgres
 
 build:
@@ -48,10 +48,9 @@ build:
           yes | mix compile
 
     - script: 
-        name: waiting db connection
+        name: "waiting postgres connection"
         code: |
-          while ! nc -q 1 $POSTGRES_PORT_5432_TCP_ADDR $POSTGRES_PORT_5432_TCP_PORT 
-          </dev/null; do sleep 3; done
+          while ! nc -q 1 $POSTGRES_PORT_5432_TCP_ADDR $POSTGRES_PORT_5432_TCP_PORT </dev/null; do sleep 3; done
 
     - script:
         name: test db
