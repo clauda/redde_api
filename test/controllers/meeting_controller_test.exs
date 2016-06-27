@@ -29,9 +29,18 @@ defmodule ReddeApi.MeetingControllerTest do
     assert response(conn, 302)
   end
 
-  test "lists all entries on index", %{claims: claims, current_user: current_user} do
+  test "lists all entries by user on index", %{claims: claims, current_user: current_user, contact: contact} do
+    meeting = create_meeting(%{contact_id: contact.id, user_id: current_user.id})
     conn = conn |> login(current_user, claims) |> get(meeting_path(conn, :index))
-    assert json_response(conn, 200)["data"] == []
+    refute json_response(conn, 200)["data"] == []
+    assert Enum.at(json_response(conn, 200)["data"], 0)["contact"]["id"] == contact.id
+  end
+
+  test "lists all entries by date", %{claims: claims, current_user: current_user, contact: contact} do
+    create_meeting(%{contact_id: contact.id, day: "2016-06-27", user_id: current_user.id})
+    conn = conn |> login(current_user, claims) |> get(meeting_path(conn, :index, date: "2016-06-27"))
+    assert json_response(conn, 200)["data"] != []
+    assert Enum.at(json_response(conn, 200)["data"], 0)["day"] == "2016-06-27"
   end
 
   test "shows chosen resource", %{claims: claims, current_user: current_user, contact: contact} do

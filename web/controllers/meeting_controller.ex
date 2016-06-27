@@ -6,13 +6,18 @@ defmodule ReddeApi.MeetingController do
 
   plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
 
-  def index(conn, _params) do
+  def index(conn, params) do
     current_user = Guardian.Plug.current_resource(conn)
     meetings = 
       (from meeting in Meeting,
         where: meeting.user_id == ^current_user.id,
         order_by: [meeting.day])
-      |> Repo.all() |> Repo.preload(:contact)
+
+    if Dict.has_key?(params, "date") do
+      meetings = (from meeting in meetings, where: meeting.day == ^params["date"])
+    end
+
+    meetings = Repo.all(meetings) |> Repo.preload(:contact)
     render(conn, "index.json", meetings: meetings)
   end
 
