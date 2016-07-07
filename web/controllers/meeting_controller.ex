@@ -13,11 +13,12 @@ defmodule ReddeApi.MeetingController do
         where: meeting.user_id == ^current_user.id,
         order_by: [meeting.day])
 
-    if Dict.has_key?(params, "date") do
-      meetings = (from meeting in meetings, where: meeting.day == ^params["date"])
-    end
+    meetings = 
+      case Dict.has_key?(params, "date") do
+        {:ok} -> (from meeting in meetings, where: meeting.day == ^params["date"])
+        _ -> Repo.all(meetings) |> Repo.preload(:contact)
+      end
 
-    meetings = Repo.all(meetings) |> Repo.preload(:contact)
     render(conn, "index.json", meetings: meetings)
   end
 

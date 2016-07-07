@@ -18,6 +18,7 @@ defmodule ReddeApi.Contact do
     field :observations, :string
     belongs_to :user, ReddeApi.User
     has_many :meetings, ReddeApi.Meeting
+    has_many :comments, ReddeApi.Comment
 
     timestamps
   end
@@ -39,14 +40,15 @@ defmodule ReddeApi.Contact do
   end
 
   defp update_state(changeset) do
-    if code_area = get_change(changeset, :code_area) do
-      region = Repo.get_by(Region, code_area: code_area)
-      if region && region.state do 
-        changeset = put_change(changeset, :state, region.state)
-      end
+    if get_change(changeset, :code_area) do
+      region = Repo.get_by(Region, code_area: get_change(changeset, :code_area))
+      changeset = 
+        case region do
+          region -> put_change(changeset, :state, region.state)
+        end
+    else
+      changeset
     end
-
-    changeset
   end
 
 end

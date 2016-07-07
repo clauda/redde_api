@@ -22,6 +22,14 @@ defmodule ReddeApi.ContactView do
       accepted: contact.accepted,
       observations: contact.observations,
       deleted: contact.deleted,
-      inserted_at: contact.inserted_at}
+      inserted_at: contact.inserted_at,
+      comments: render_many(contact.comments, __MODULE__, "comment.json", as: :comment)}
+  end
+
+  def render("comment.json", %{comment: comment}) do
+    %{ 
+      message: comment.message,
+      kinda: comment.kinda
+    }
   end
 end

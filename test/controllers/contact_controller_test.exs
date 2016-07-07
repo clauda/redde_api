@@ -68,7 +68,8 @@ defmodule ReddeApi.ContactControllerTest do
       "accepted" => contact.accepted,
       "observations" => contact.observations,
       "deleted" => contact.deleted,
-      "inserted_at" => Ecto.DateTime.to_iso8601(contact.inserted_at) }
+      "inserted_at" => Ecto.DateTime.to_iso8601(contact.inserted_at),
+      "comments" => [] }
   end
 
   test "does not show resource and instead throw error when id is nonexistent", %{claims: claims, current_user: current_user} do

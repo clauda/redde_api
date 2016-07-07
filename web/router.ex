@@ -30,9 +30,10 @@ defmodule ReddeApi.Router do
     pipe_through :api
     get "/", ContactController, :index
 
-    resources "/contacts", ContactController, except: [:new, :edit]
     resources "/users", UserController, only: [:create]
+    resources "/contacts", ContactController, except: [:new, :edit]
     resources "/meetings", MeetingController, except: [:new, :edit]
+    resources "/comments", CommentController, except: [:new, :edit]
     
     get "/profile", UserController, :profile
     resources "/sessions", SessionController, only: [:create]

@@ -13,6 +13,7 @@ defmodule ReddeApi.ContactController do
         where: contact.user_id == ^current_user.id and contact.deleted == false,
         order_by: [contact.fullname])
       |> Repo.all()
+      |> Repo.preload(:comments)
     render(conn, "index.json", contacts: contacts)
   end
 
@@ -25,7 +26,7 @@ defmodule ReddeApi.ContactController do
         conn
         |> put_status(:created)
         |> put_resp_header("location", contact_path(conn, :show, contact))
-        |> render("show.json", contact: contact)
+        |> render("show.json", contact: Repo.preload(contact, :comments))
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -34,7 +35,7 @@ defmodule ReddeApi.ContactController do
   end
 
   def show(conn, %{"id" => id}) do
-    contact = Repo.get!(Contact, id)
+    contact = Repo.get!(Contact, id) |> Repo.preload(:comments)
     render(conn, "show.json", contact: contact)
   end
 
@@ -44,7 +45,7 @@ defmodule ReddeApi.ContactController do
 
     case Repo.update(changeset) do
       {:ok, contact} ->
-        render(conn, "show.json", contact: contact)
+        render(conn, "show.json", contact: Repo.preload(contact, :comments))
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -61,7 +62,7 @@ defmodule ReddeApi.ContactController do
     changeset = Contact.changeset(contact, %{ deleted: true, deleted_at: Ecto.DateTime.utc() })
     case Repo.update(changeset) do
       {:ok, contact} ->
-        render(conn, "show.json", contact: contact)
+        render(conn, "show.json", contact: Repo.preload(contact, :comments))
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
