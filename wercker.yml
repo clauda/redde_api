@@ -21,8 +21,7 @@ services:
   # pg_ctl -D /var/lib/postgresql/data -l logfile start
   - id: postgres
     env:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
 
 build:
   # The steps that will be executed on build

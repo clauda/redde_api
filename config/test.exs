@@ -12,10 +12,10 @@ config :logger, level: :warn
 # Configure your database
 config :redde_api, ReddeApi.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
-  database: "redde_api_test",
-  hostname: "localhost",
+  username: System.get_env("POSTGRES_PASSWORD") || "postgres",
+  password: System.get_env("POSTGRES_USER") || "postgres",
+  database: System.get_env("POSTGRES_NAME") || "redde_api_test",
+  hostname: System.get_env("POSTGRES_PORT_5432_TCP_ADDR") || "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
 
 config :comeonin, :bcrypt_log_rounds, 4
