@@ -29,7 +29,8 @@ defmodule ReddeApi.ContactView do
   def render("comment.json", %{comment: comment}) do
     %{ 
       message: comment.message,
-      kinda: comment.kinda
+      kinda: comment.kinda,
+      inserted_at: comment.inserted_at
     }
   end
 end

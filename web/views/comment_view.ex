@@ -13,6 +13,7 @@ defmodule ReddeApi.CommentView do
     %{id: comment.id,
       message: comment.message,
       kinda: comment.kinda,
-      contact_id: comment.contact_id}
+      contact_id: comment.contact_id,
+      inserted_at: comment.inserted_at}
   end
 end

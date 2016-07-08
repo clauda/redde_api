@@ -22,7 +22,8 @@ defmodule ReddeApi.CommentControllerTest do
     assert json_response(conn, 200)["data"] == %{"id" => comment.id,
       "message" => comment.message,
       "contact_id" => comment.contact_id,
-      "kinda" => comment.kinda}
+      "kinda" => comment.kinda,
+      "inserted_at" => Ecto.DateTime.to_iso8601(comment.inserted_at)}
   end
 
   test "does not show resource and instead throw error when id is nonexistent", %{conn: conn} do

@@ -8,7 +8,7 @@ defmodule ReddeApi.Auth do
     Keyword.fetch!(opts, :repo)
   end
 
-  def call(conn, repo) do
+  def call(conn) do
     user_id = get_session(conn, :user_id)
     user = user_id && Repo.get(User, user_id)
     assign(conn, :current_user, user)
