@@ -50,5 +50,4 @@ defmodule ReddeApi.Contact do
       changeset
     end
   end
-
 end

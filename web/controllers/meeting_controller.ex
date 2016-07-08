@@ -1,6 +1,6 @@
 defmodule ReddeApi.MeetingController do
   use ReddeApi.Web, :controller
-  alias ReddeApi.Meeting
+  alias ReddeApi.{Meeting, Comment}
 
   plug :scrub_params, "meeting" when action in [:create, :update]
 
@@ -30,6 +30,7 @@ defmodule ReddeApi.MeetingController do
         conn
         |> put_status(:created)
         |> put_resp_header("location", meeting_path(conn, :show, meeting))
+        |> create_comment(Repo.preload(meeting, :contact), :create)
         |> render("show.json", meeting: Repo.preload(meeting, :contact))
       {:error, changeset} ->
         conn
@@ -65,7 +66,9 @@ defmodule ReddeApi.MeetingController do
     changeset = Meeting.changeset(meeting, %{ canceled: true })
     case Repo.update(changeset) do
       {:ok, meeting} ->
-        render(conn, "show.json", meeting: meeting)
+        conn
+        |> create_comment(Repo.preload(meeting, :contact), :cancel)
+        |> render("show.json", meeting: meeting)
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -78,4 +81,16 @@ defmodule ReddeApi.MeetingController do
     |> put_flash(:error, "Authentication required")
     |> redirect(to: session_path(conn, :new))
   end
+
+  defp create_comment(conn, meeting, type) do
+    message = case type do
+      :cancel -> "A reunião com #{meeting.contact.fullname} dia #{meeting.day} foi cancelada."
+      _ -> "Você marcou uma reunião com #{meeting.contact.fullname} dia #{meeting.day}!"
+    end
+
+    Comment.changeset(%Comment{message: message, kinda: "meeting", contact_id: meeting.contact_id})
+    |> Repo.insert!
+    conn
+  end
+
 end
