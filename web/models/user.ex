@@ -18,21 +18,22 @@ defmodule ReddeApi.User do
     timestamps
   end
 
-  @fields ~w(name email company code_area phone_number)
+  @fields ~w(name email company code_area phone_number platform uuid version)
 
   def changeset(model, params \\ %{}) do
     model
     |> cast(params, @fields)
-    |> validate_required([:email])
-    |> validate_length(:email, min: 1, max: 255)
-    |> validate_format(:email, ~r/@/)
-    |> unique_constraint(:email)
+    |> unique_constraint(:uuid)
   end
 
   def registration_changeset(model, params \\ %{}) do
     model
     |> changeset(params)
     |> cast(params, ~w(password), [])
+    |> validate_required([:email])
+    |> validate_length(:email, min: 1, max: 255)
+    |> validate_format(:email, ~r/@/)
+    |> unique_constraint(:email)
     |> validate_length(:password, min: 6)
     |> put_password_hash
   end

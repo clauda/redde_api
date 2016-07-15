@@ -2,7 +2,8 @@ defmodule ReddeApi.UserControllerTest do
   use ReddeApi.ConnCase
 
   alias ReddeApi.User
-  @valid_attrs %{email: "foo@bar.com", password: "s3cr3t", name: "Claudia", company: "Phoenix"}
+  @device_attrs %{platform: "Android", uuid: "<3phoenix", version: "kitkat"}
+  @valid_attrs %{email: "foo@bar.com", password: "s3cr3t", name: "Claudia", company: "Phoenix", platform: "Android", uuid: "<3phoenix", version: "kitkat"}
   @invalid_attrs %{email: nil}
 
   setup do  
@@ -12,30 +13,43 @@ defmodule ReddeApi.UserControllerTest do
   end
 
   def create_user(%{name: name}) do
-    User.registration_changeset(%User{}, %{name: name, email: "#{name}@example.com", password: "<3phoenix"}) 
+    User.changeset(%User{name: name, uuid: "q1w2e3", email: "#{name}@email.com"})
     |> Repo.insert!
   end
 
   test "creates and renders resource when data is valid", %{conn: conn} do
-    conn = post conn, user_path(conn, :create), user: @valid_attrs
+    conn = post(conn, user_path(conn, :create), user: @valid_attrs)
     body = json_response(conn, 201)
-    assert body["email"]
+    assert body["id"]
     assert body["name"]
+    assert body["email"]
     assert body["company"]
-    refute body["id"]
+    assert body["platform"]
+    assert body["uuid"]
+    assert body["version"]
     refute body["password"]
     assert Repo.get_by(User, email: "foo@bar.com")
   end
 
-  test "does not create resource and renders errors when data is invalid", %{conn: conn} do
-    conn = post conn, user_path(conn, :create), user: @invalid_attrs
-    assert json_response(conn, 422)["errors"] != %{}
+  test "no auth required! anyone can use this incredible app", %{conn: conn} do
+    conn = post conn, user_path(conn, :create), user: @device_attrs
+    assert json_response(conn, 201)["errors"] != %{}
   end
 
   test "profile", context do
     conn = conn
       |> login(context.current_user, context.claims)
       |> get(user_path(conn, :profile))
+    body = json_response(conn, 200)
+    assert body["name"]
+    assert body["email"]
+    assert body["uuid"]
+  end
+
+  test "registration", %{conn: conn} do
+    user = create_user(%{name: "john"})
+    conn = conn |> put(user_path(conn, :registration, user), user: @valid_attrs)
+
     body = json_response(conn, 200)
     assert body["name"]
     assert body["email"]

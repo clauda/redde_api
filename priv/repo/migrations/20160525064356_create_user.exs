@@ -4,7 +4,7 @@ defmodule ReddeApi.Repo.Migrations.CreateUser do
   def change do
     create table(:users) do
       add :name, :string
-      add :email, :string, null: false
+      add :email, :string
       add :password_hash, :string
       add :company, :string
       add :code_area, :integer

@@ -31,11 +31,14 @@ defmodule ReddeApi.Router do
     get "/", ContactController, :index
 
     resources "/users", UserController, only: [:create]
+    get "/profile", UserController, :profile
+    put "/users/:id/registration", UserController, :registration
+
     resources "/contacts", ContactController, except: [:new, :edit]
     resources "/meetings", MeetingController, except: [:new, :edit]
     resources "/comments", CommentController, except: [:new, :edit]
     
-    get "/profile", UserController, :profile
     resources "/sessions", SessionController, only: [:create]
+    post "/enter", SessionController, :enter
   end
 end

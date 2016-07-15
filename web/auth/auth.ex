@@ -22,21 +22,27 @@ defmodule ReddeApi.Auth do
   end
 
   def fail(conn) do
-    conn
-    |> assign(:current_user, "failed")
+    conn |> assign(:current_user, "failed")
   end
 
-  def authenticate(conn, email, given_pass, opts) do
+  def device_auth(conn, user) do
+    cond do
+      user ->
+        {:ok, login(conn, user)}
+          user -> {:error, :unauthorized, conn}
+            {:error, :not_found, conn}
+    end
+  end
+
+  def email_auth(conn, email, given_pass) do
     user = Repo.get_by(User, email: email)
     cond do
       user && checkpw(given_pass, user.password_hash) ->
         {:ok, login(conn, user)}
-        user ->
-          {:error, :unauthorized, conn}
-          true ->
-            dummy_checkpw()
+          user -> {:error, :unauthorized, conn}
+          true -> dummy_checkpw()
             {:error, :not_found, conn}
-          end
-        end
+    end
+  end
 
-      end
+end
