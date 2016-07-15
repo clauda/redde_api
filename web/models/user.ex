@@ -10,6 +10,9 @@ defmodule ReddeApi.User do
     field :phone_number, :string
     field :password_hash, :string
     field :password, :string, virtual: true
+    field :platform, :string
+    field :uuid, :string
+    field :version, :string
     has_many :contacts, ReddeApi.Contact
 
     timestamps
